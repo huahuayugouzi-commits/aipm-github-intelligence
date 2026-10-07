@@ -1,0 +1,11 @@
+import { db } from "@/lib/db";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+export const dynamic="force-dynamic";
+
+export default async function RunDetail({params}:{params:Promise<{id:string}>}){
+  const {id}=await params;const run=db.prepare("SELECT * FROM pipeline_runs WHERE id=?").get(id) as any;if(!run)notFound();
+  const usage=db.prepare("SELECT u.*,p.full_name FROM ai_usage u LEFT JOIN projects p ON p.id=u.project_id WHERE u.run_id=? ORDER BY u.id").all(id) as any[];
+  const errors=JSON.parse(run.error_json||"[]") as string[];const totalTokens=usage.reduce((sum,x)=>sum+Number(x.input_tokens)+Number(x.output_tokens),0);const totalCost=usage.reduce((sum,x)=>sum+Number(x.estimated_cost),0);
+  return <><header className="header"><div><h1>任务 #{run.id}</h1><div className="subtitle">{run.trigger_type} · {run.started_at}</div></div><span className={`badge status-${run.status}`}>{run.status}</span></header><section className="grid metrics"><div className="card metric"><small>采集项目</small><strong>{run.collected_count}</strong></div><div className="card metric"><small>完成分析</small><strong>{run.analyzed_count}</strong></div><div className="card metric"><small>Token</small><strong>{totalTokens.toLocaleString()}</strong></div><div className="card metric"><small>估算费用</small><strong>${totalCost.toFixed(4)}</strong></div></section>{errors.length>0&&<section className="card section error-card"><h2 className="section-title">错误与降级记录</h2><ul>{errors.map((x,i)=><li key={i}>{x}</li>)}</ul></section>}<section className="section"><div className="chart-header"><h2 className="section-title">AI 调用与缓存明细</h2>{run.report_id&&<Link className="btn secondary" href={`/reports/${run.report_id}`}>查看生成的周报</Link>}</div>{usage.length?<div className="table-wrap"><table><thead><tr><th>项目</th><th>模型</th><th>输入 Token</th><th>输出 Token</th><th>费用</th><th>结果</th></tr></thead><tbody>{usage.map(x=><tr key={x.id}><td>{x.full_name||"—"}</td><td>{x.model}</td><td>{x.input_tokens}</td><td>{x.output_tokens}</td><td>${Number(x.estimated_cost).toFixed(4)}</td><td>{x.cache_hit?"缓存命中":x.success?"API 成功":"API 失败"}</td></tr>)}</tbody></table></div>:<div className="card muted">本次任务没有需要分析的项目。</div>}</section></>;
+}

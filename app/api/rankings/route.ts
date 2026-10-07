@@ -1,0 +1,2 @@
+import { getRankings } from "@/lib/rankings";export const runtime="nodejs";export const dynamic="force-dynamic";
+export async function GET(request:Request){const p=new URL(request.url).searchParams;return Response.json(getRankings({category:p.get("category")||undefined,query:p.get("q")||undefined,language:p.get("language")||undefined,license:p.get("license")||undefined,minStars:Number(p.get("minStars"))||undefined,sort:(p.get("sort") as "stars"|"activity"|"score")||undefined}));}

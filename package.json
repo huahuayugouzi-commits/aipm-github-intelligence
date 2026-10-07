@@ -1,0 +1,39 @@
+{
+  "name": "aipm-github-intelligence",
+  "version": "0.1.0",
+  "description": "AI Product Manager GitHub Intelligence — weekly open-source AI project ranking, trend tracking and AI-powered product analysis.",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huahuayugouzi-commits/aipm-github-intelligence.git"
+  },
+  "homepage": "https://aipm-web-production-e652.up.railway.app/",
+  "engines": {
+    "node": ">=24"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "build": "next build",
+    "start": "node server.mjs --production",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.0.0",
+    "node-cron": "^4.2.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
+  }
+}

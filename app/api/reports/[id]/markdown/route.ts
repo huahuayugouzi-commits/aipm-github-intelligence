@@ -1,0 +1,2 @@
+import { db } from "@/lib/db";export const runtime="nodejs";
+export async function GET(_:Request,{params}:{params:Promise<{id:string}>}){const {id}=await params;const r=db.prepare("SELECT title,content_markdown FROM weekly_reports WHERE id=?").get(id) as any;if(!r)return new Response("Not found",{status:404});return new Response(r.content_markdown,{headers:{"Content-Type":"text/markdown; charset=utf-8","Content-Disposition":`attachment; filename="aipm-report-${id}.md"`}})}
